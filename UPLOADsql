@@ -1,0 +1,94 @@
+SELECT *
+FROM LPROD , PROD;
+-- (CARTESSIAN PRODUCT)   VANSI(미국표준협회) 구문        
+SELECT * FROM LPROD CROSS JOIN PROD;           
+
+SELECT *
+FROM LPROD
+WHERE LPROD_ID >9;
+--드우른생선 
+DELETE FROM LPROD
+WHERE LPOD_ID> 9;
+--TRANSACTION 종료 (변경된 내용,INERT, UPDATE, DELETE반영)
+ COMMIT;
+ 
+ SELECT PROD.PROD_ID   AS 상품코드
+       ,PROD.PROD_NAME  AS 상품명
+       ,LPROD.LPROD_NM AS 분류명
+       ,LPROD.LPROD_GU  AS 기본키
+       ,PROD.PROD_LGU  AS 외래키
+FROM PROD, LPROD 
+WHERE LPROD.LPROD_GU = PROD.PROD_LGU
+;
+
+SELECT PROD.PROD_ID
+     , PROD.PROD_NAME
+     , BUYER.BUYER_NAME 거래처
+     , PROD.PROD_BUYER  외래키
+     , BUYER.BUYER_ID 기본키
+FROM BUYER, PROD
+WHERE PROD.PROD_BUYER = BUYER.BUYER_ID;
+
+SELECT 
+       PROD_ID   상품ID
+      ,PROD_NAME  상품명
+      ,BUY_DATE   구매일
+      ,BUY_QTY    구매수량
+      ,BUY_COST   구매가격
+FROM PROD, BUYPROD
+WHERE PROD_ID = BUY_PROD
+;
+
+
+SELECT 
+       PROD_ID   상품ID
+      ,PROD_NAME  상품명
+      ,BUY_DATE   구매일
+      ,BUY_QTY    구매수량
+      ,BUY_COST   구매가격
+FROM PROD A INNER JOIN BUYPROD B
+ON( PROD_ID = BUY_PROD)
+;
+-- 상품코드 구입 갯수, 회원 ID , 회원명 
+SELECT 
+       CART_NO     장바구니
+    ,  CART_PROD 
+    ,  CART_QTY    구입갯수
+    ,  MEM_ID      회원ID
+    ,  MEM_NAME    회원명
+FROM CART , MEMBER
+WHERE MEM_ID = CART_MEMBER
+;
+--- ANSI 
+SELECT 
+       CART_NO     장바구니
+    ,  CART_PROD   
+    ,  CART_QTY    구입갯수
+    ,  MEM_ID      회원ID
+    ,  MEM_NAME    회원명
+FROM CART INNER JOIN MEMBER
+ON ( MEM_ID = CART_MEMBER )
+;
+SELECT
+       CART_NO     장바구니
+    ,  CART_PROD 
+    ,  CART_QTY    구입갯수
+    ,  MEM_ID      회원ID
+    ,  MEM_NAME    회원명
+FROM CART, MEMBER, PROD
+WHERE  MEM_ID = CART_MEMBER 
+AND CART_PROD = PROD_ID
+;
+SELECT
+       CART_NO     장바구니
+    ,  CART_PROD 
+    ,  CART_QTY    구입갯수
+    ,  MEM_ID      회원ID
+    ,  MEM_NAME    회원명
+FROM CART INNER JOIN MEMBER ON (CART_MEMBER = MEM_ID)
+          INNER JOIN PROD  ON  (CART_PROD  = PROD_ID)
+;
+
+
+
+
