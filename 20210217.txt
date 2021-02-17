@@ -1,0 +1,166 @@
+CREATE OR REPLACE VIEW VW_INAMT
+AS
+SELECT PROD_ID BUYERID
+    ,  BUYER_NAME BUYERNAME
+    ,  BUY_QTY*BUY_COST INAMT
+FROM PROD,BUYPROD,BUYER
+WHERE SUBSTR(BUY_DATE,4,2)= '01';
+     
+     SELECT * FROM VW_INAMT;
+     
+
+SELECT a.PROD_ID BUYERID
+    ,  a.BUYER_NAME BUYERNAME
+    ,  sum(c.BUY_QTY*c.BUY_COST) INAMT
+FROM BUYER a inner join prod b on(a.buyer_id = b.pro_buyer)
+           a inner join buyprod c on(b.prod_id = c.buy_prod)
+WHERE SUBSTR(BUY_DATE,4,2)= '01'
+group by a.buyer_id, a.buyer_name;
+/
+set serveroutput on;
+/
+--dbms output을 쓰기 위해  서버 아웃풋을 쓴거임 
+
+DECLARE
+      -- 9자리중 2자리 소수 뒤
+ v_i    NUMBER(9,2) := 123456.78;
+ v_str  VARCHAR2(20) := '홍길동';
+ c_pi   CONSTANT NUMBER(8,6) := 3.141592;
+ v_flag BOOLEAN NOT NULL := TRUE;
+ v_date VARCHAR2(10) := TO_char(sysdate, 'yyyy-mm-dd');
+ begin
+ c_pi := 3.15;
+ dbms_output.put_line('v_i:' || v_i);
+ dbms_output.put_line('v_str:' || v_str);
+ dbms_output.put_line('c_pi:' || c_pi);
+ dbms_output.put_line('v_date:' || v_date);
+end;
+/
+
+DECLARE 
+  V_NUM NUMBER := 37;
+BEGIN
+  IF MOD(V_NUM, 2) = 0 THEN
+   DBMS_OUTPUT.PUT_LINE(V_NUM || '는 짝수');
+ ELSE
+   DBMS_OUTPUT.PUT_LINE(V_NUM || '는 홀수');
+ END IF;
+END;
+/
+
+DECLARE
+ V_NUM NUMBER := 77;
+BEGIN
+ IF V_NUM >90 THEN
+   DBMS_OUTPUT.PUT_LINE('수');
+ ELSIF V_NUM >80 THEN
+   DBMS_OUTPUT.PUT_LINE('우');
+ ELSIF V_NUM >70 THEN
+   DBMS_OUTPUT.PUT_LINE('미');
+ ELSE
+   DBMS_OUTPUT.PUT_LINE(' 좀만더');
+ END IF;
+END;
+/
+
+DECLARE 
+ V_AVG_SALE PROD.PROD_SALE%TYPE; --NUMBER(10) -- (REFERENCES 변수)
+ V_SALE NUMBER := 500000;        --(SCLAR 변수)
+BEGIN
+ SELECT AVG(PROD_SALE)INTO V_AVG_SALE
+ FROM PROD;
+ IF V_SALE < V_AVG_SALE THEN
+   DBMS_OUTPUT.PUT_LINE('평균 단가가 500000 초과 입니다.');
+ ELSE IF
+   DBMS_OUTPUT.PUT_LINE('평균 단가가 500000 이하 입니다.');
+ END IF;
+ END;
+ /
+
+--회원 아이디'E001
+--마이리지 500넘으면 VIP
+/
+DECLARE 
+     V_MILEAGE NUMBER := 0;
+     V_NAME MEMBER.MEM_NAME%TYPE;
+BEGIN
+ SELECT MEM_MILEAGE,MEM_NAME INTO V_MILEAGE,V_NAME
+ FROM MEMBER 
+ WHERE MEM_ID = 'e001';
+ 
+ IF V_MILEAGE >5000 THEN
+   DBMS_OUTPUT.PUT_LINE('VIP' || V_NAME);
+ ELSE
+   DBMS_OUTPUT.PUT_LINE('일반' || V_NAME);
+END IF;
+END;
+/
+
+/
+DECLARE
+  V_SALE NUMBER;
+BEGIN
+SELECT AVG(PROD_SALE) INTO V_SALE --INTO V_SALE --54233.33
+FROM PROD ,LPROD
+WHERE PROD_LGU =LPROD_GU
+AND   LPROD_NM = '화장품';
+END;
+/
+DECLARE
+  V_SALE NUMBER;
+  V_STR VARCHAR2(30);
+BEGIN
+   SELECT ROUND(AVG(PROD_SALE),2) INTO V_SALE --54233.33
+   FROM PROD
+   WHERE PROD_LGU = (
+   SELECT LPROD_GU FROM LPROD
+   WHERE LPROD_NM = '화장품'
+   );
+   DBMS_OUTPUT.PUT_LINE('V_SALE :' || V_SALE);
+   
+   CASE WHEN V_SALE < 3000 THEN
+            DBMS_OUTPUT.PUT_LINE('싸다');
+        WHEN V_SALE >= 3000 AND V_SALE <6000 THEN
+            DBMS_OUTPUT.PUT_LINE('보통');
+        WHEN V_SALE >= 6000 AND V_SALE< 9000 THEN
+            DBMS_OUTPUT.PUT_LINE('비싸다');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('너무 비싸다');
+   END CASE;     
+   
+   DBMS_OUTPUT.PUT_LINE('화장품의 평균 판매가는 ' || V_SALE ||
+      '원이고 '|| V_STR || '이다');
+   END;
+   /
+--가파치 업체의 지역을 검색 하여 
+-- 다음과 같이 출ㄹ력
+-- 대구,부산 : 경남 
+-- 대전 : 충청 
+--서울 ,인천 ; 수도권 
+--기타 : 기타
+SELECT *
+FROM BUYER
+WHERE BUYER_NAME = '가파치';
+/
+DECLARE
+  V_ADD VARCHAR2(30);
+BEGIN
+SELECT SUBSTR(BUYER_ADD1,1,2) INTO V_ADD  --대구
+FROM BUYER
+WHERE BUYER_NAME = '가파치';
+
+ DBMS_OUTPUT.PUT_LINE('V_ADD  :' || V_ADD);
+
+ CASE WHEN V_ADD = '대구' THEN
+            DBMS_OUTPUT.PUT_LINE('경북');
+        WHEN V_ADD = '부산' THEN
+            DBMS_OUTPUT.PUT_LINE('경남');
+        WHEN V_ADD = '대전' THEN
+            DBMS_OUTPUT.PUT_LINE('충청');
+        WHEN V_ADD = '서울' AND V_ADD = '인천' THEN
+            DBMS_OUTPUT.PUT_LINE('수도권');
+        ELSE  DBMS_OUTPUT.PUT_LINE('기타');
+   END CASE;     
+   DBMS_OUTPUT.PUT_LINE('가파치의 지역은  ' || V_ADD ||'이다');
+   END;
+   /
